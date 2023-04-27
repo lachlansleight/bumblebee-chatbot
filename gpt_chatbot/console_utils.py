@@ -35,13 +35,13 @@ def print_center(text):
         print(el.center(console_width))
 
 def clear_last_line():
-    sys.stdout.write("\033[F" + (" " * (console_width - 1)) + "\r")
+    sys.stdout.write("\033[F" + (" " * (console_width)) + "\r")
 
 def print_recording():
-    print((Back.RED + "Recording..." + Style.RESET_ALL).center(console_width))
+    print(Back.RED + "Recording...".center(console_width) + Style.RESET_ALL)
 
 def print_transcribing():
-    print((Back.GREEN + "Transcribing..." + Style.RESET_ALL).center(console_width))
+    print(Back.GREEN + "Transcribing...".center(console_width) + Style.RESET_ALL)
 
 def print_thinking():
-    print((Back.GREEN + "Thinking..." + Style.RESET_ALL).center(console_width))
+    print(Back.GREEN + "Thinking...".center(console_width) + Style.RESET_ALL)

@@ -103,6 +103,8 @@ async def main_loop():
                     await openai.add_message(user_message, tts.say)
                 elif show_debug:
                     print("Transcription detected no words, skipping")
+                
+                last_message_time = time.time()
                 recorder.start_recording()
 
 
