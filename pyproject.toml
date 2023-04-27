@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "gpt_chatbot"
+version = "0.1.0"
+description = ""
+authors = ["Lachlan Sleight"]
+readme = "README.md"
+packages = [{include = "gpt_chatbot"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pvporcupine = "^2.2.0"
+pvrecorder = "^1.1.1"
+webrtcvad = "^2.0.10"
+wave = "^0.0.2"
+openai-whisper = "^20230314"
+openai = "^0.27.4"
+pyttsx3 = "^2.90"
+colorama = "^0.4.6"
+tiktoken = "0.3.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dev = "gpt_chatbot.wakeword:main"

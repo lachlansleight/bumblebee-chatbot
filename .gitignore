@@ -1,0 +1,6 @@
+.vscode
+audio-gen
+conversations
+dist
+gpt_chatbot/__pycache__
+.env
