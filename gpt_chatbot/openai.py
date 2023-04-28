@@ -8,7 +8,7 @@ from tiktoken import get_encoding, Encoding
 from typing import cast
 from colorama import Back, Style
 
-from gpt_chatbot.console_utils import clear_last_line, print_thinking
+from gpt_chatbot.console_utils import clear_last_line, print_thinking, chat_width
 from gpt_chatbot.message_printer import MessagePrinter
 
 class OpenAi:
@@ -35,15 +35,12 @@ class OpenAi:
         try:
             text = ""
             all_text = ""
-            cur_line_length = 0
-            lines = 0
-            console_width = int(os.get_terminal_size().columns/1.25)
 
             # Actually trigger the streaming response
             self.prompt_tokens = self.prompt_tokens + len(self.__encoding.encode(messages[-1]["content"]))
             response = openai.ChatCompletion.create(model="gpt-4", messages=messages, stream=True)
 
-            printer = MessagePrinter(int(os.get_terminal_size().columns * 0.8), Back.BLUE)
+            printer = MessagePrinter(chat_width, Back.BLUE)
             
             clear_last_line()
             for chunk in response:
@@ -66,15 +63,15 @@ class OpenAi:
                     num_words = len(text.split(" "))
                     # Split phrases by comma, so long as the current phrase is longer than five words
                     # (to prevent things like "Actually," generating a separate voice file)
-                    if num_words > 5 and new_text == ",":
+                    if num_words > 0 and (new_text == "," or new_text == ";"):
                         on_sentence_received(text)
                         text = ""
                     # Split sentences (including sentences terminating in a colon)
-                    elif num_words > 2 and (new_text == "." or new_text == ":" or new_text == "?" or new_text == "!"):
+                    elif num_words > 0 and (new_text == "." or new_text == ":" or new_text == "?" or new_text == "!"):
                         on_sentence_received(text)
                         text = ""
                     # Split newlines since these are generally sentence terminations too
-                    elif new_text == "\n" or new_text == "\n\n":
+                    elif new_text.find("\n") != -1:
                         on_sentence_received(text)
                         text = ""
                 except Exception as e:

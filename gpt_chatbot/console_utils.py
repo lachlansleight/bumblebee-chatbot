@@ -4,7 +4,7 @@ import textwrap
 from colorama import Back, Style
 
 console_width = os.get_terminal_size().columns
-chat_width = int(console_width * 0.8)
+chat_width = min(80, int(console_width * 0.8))
 
 # For printing messages from the AI - left aligned, blue background
 def print_left(text):

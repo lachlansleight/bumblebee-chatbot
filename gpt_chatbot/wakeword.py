@@ -31,7 +31,7 @@ async def main_loop():
     # The Whisper model to use - larger models are more accurate, but much slower
     whisper_model = "base"
     # The system prompt that defines the broad behaviour of the system
-    system_prompt = "You are a casual and helpful assistant that responds with short replies unless asked to provide more information"
+    system_prompt = "You are a casual and helpful assistant. Unless more information is requested, you keep your replies as brief as possible. Unless explicitly asked, you do not respond with lists of information."
     #============================================#
 
     openai = OpenAi(system_prompt)
@@ -118,7 +118,8 @@ async def main_loop():
         print_center("Keyboard Interrupt Received - Stopping App")
     finally:
         # Cleanup
-        recorder.cleanup()
+        recorder.cleanup() # frees resources
+        tts.cleanup() # deletes temporary audio files
 
 def main():
     asyncio.run(main_loop())

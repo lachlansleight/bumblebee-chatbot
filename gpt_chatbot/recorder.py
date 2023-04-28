@@ -66,7 +66,7 @@ class AudioRecorder:
 
             vadBytes = b''.join(struct.pack('<h', sample) for sample in newData[:480])
             isDead = not self.__vad.is_speech(vadBytes, self.__sample_rate)
-            if isDead:
+            if isDead and (time.time() - lastTime) > self.__dead_time_threshold:
                 deadTime += self.__frame_length / self.__sample_rate
             else:
                 deadTime = 0
@@ -95,6 +95,4 @@ class AudioRecorder:
     def cleanup(self):
         self.__recorder.delete()
         self.__porcupine.delete()
-        if os.path.exists("./audio-gen/user.wav"):
-            subprocess.run(["rm", "./audio-gen/user.wav"])
         

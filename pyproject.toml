@@ -25,3 +25,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 dev = "gpt_chatbot.wakeword:main"
+test = "gpt_chatbot.whispertest:main"
