@@ -8,6 +8,7 @@ from gpt_chatbot.console_utils import print_right, print_center, print_recording
 from gpt_chatbot.tts import TextToSpeech
 from gpt_chatbot.openai import OpenAi
 from gpt_chatbot.recorder import AudioRecorder
+from gpt_chatbot.soundplayer import SoundPlayer
 
 async def main_loop():
     # Config vars - should make these command line arguments at some point
@@ -35,6 +36,7 @@ async def main_loop():
 
     openai = OpenAi(system_prompt)
     tts = TextToSpeech(tts_voice, show_debug)
+    soundplayer = SoundPlayer()
 
     # Show fancy header
     print("")
@@ -64,8 +66,10 @@ async def main_loop():
     print("")
     print_center("Initialization Complete.")
     print_center("Say 'Bumblebee' to trigger recording")
-    tts.say("Initialization Complete!")
-    tts.say("Say 'Bumblebee' to trigger recording.")
+    #tts.say("Initialization Complete!")
+    #tts.say("Say 'Bumblebee' to trigger recording.")
+    soundplayer.play_beep_low()
+    soundplayer.play_beep_high()
     print("=" * total_width + "\n")
 
     # Start recording!
@@ -84,6 +88,7 @@ async def main_loop():
             result = recorder.check_for_wakeword()
             if result >= 0:
                 # Wakeword detected - begin recording audio from the user
+                soundplayer.play_beep_low()
                 print_recording()
                 await recorder.record_speech()
 
@@ -100,6 +105,7 @@ async def main_loop():
 
                 if len(user_message.strip()) > 0:
                     # User speech detected - get response from OpenAI and play it
+                    soundplayer.play_beep_high()
                     await openai.add_message(user_message, tts.say)
                 elif show_debug:
                     print("Transcription detected no words, skipping")
