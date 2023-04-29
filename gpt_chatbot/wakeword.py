@@ -29,7 +29,9 @@ async def main_loop():
     # https://mycroftai.github.io/mimic3-voices/
     tts_voice = "en_US/hifi-tts_low#92"
     # The Whisper model to use - larger models are more accurate, but much slower
-    whisper_model = "base"
+    whisper_model = "tiny.en"
+    # Either cuda or cpu
+    whisper_device = "cuda"
     # The system prompt that defines the broad behaviour of the system
     system_prompt = "You are a casual and helpful assistant. Unless more information is requested, you keep your replies as brief as possible. Unless explicitly asked, you do not respond with lists of information."
     #============================================#
@@ -55,7 +57,7 @@ async def main_loop():
 
     # Initialize Whisper transcription
     print_center("Initializing Whisper")
-    model = whisper.load_model(whisper_model)
+    model = whisper.load_model(whisper_model, device=whisper_device)
     clear_last_line()
     print_center("Initialized Whisper with model \"%s\"" % whisper_model)
 
@@ -80,8 +82,11 @@ async def main_loop():
         while True:
             # Clear conversation history if it's been more than the threshold time since the last message
             if time.time() - last_message_time > conversation_break_threshold and openai.completion_tokens > 0:
+                print("=" * total_width)
                 print_center("Starting a new conversation.")
                 print_center("The last conversation cost %.2f cents" % openai.get_price_cents())
+                print("=" * total_width)
+                print_center("")
                 openai.reset_conversation()
 
             # Watch for wakeword
