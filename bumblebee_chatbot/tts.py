@@ -6,7 +6,7 @@ import re
 import requests
 import urllib.parse
 from threading import Thread
-from gpt_chatbot.console_utils import print_center
+from bumblebee_chatbot.console_utils import print_center
 
 NEW, GENERATING, GENERATED, PLAYING, PLAYED = range(5)
 
@@ -33,18 +33,21 @@ class TextToSpeech:
     __generate_thread: Thread
     __play_thread: Thread
     __next_id: int
+    __with_server: bool
     __server_process: Popen
 
-    def __init__(self, voice, debug):
+    def __init__(self, voice, with_server, debug):
         self.__voice = voice
         self.__debug = debug
         self.__next_id = 1
+        self.__with_server = with_server
 
-        self.__server_process = subprocess.Popen(
-            ["mimic3-server"], 
-            stdout=subprocess.DEVNULL, 
-            stderr=subprocess.DEVNULL,
-        )
+        if with_server:
+            self.__server_process = subprocess.Popen(
+                ["mimic3-server"], 
+                stdout=subprocess.DEVNULL, 
+                stderr=subprocess.DEVNULL,
+            )
 
         self.__play_thread = Thread(target=self.__check_for_play, name="Check for Play", daemon=True)
         self.__play_thread.start()
@@ -109,10 +112,18 @@ class TextToSpeech:
             os.remove("./audio-gen/ai-%i.wav" % message.id)
 
         lastTime = time.time()
-        url = "http://localhost:59125/api/tts?text=%s&voice=%s" % (urllib.parse.quote(message.text), urllib.parse.quote(self.__voice))
-        response = requests.get(url)
-        with open("./audio-gen/ai-%i.wav" % message.id, mode="bx") as f:
-            f.write(response.content)
+        
+        if self.__with_server:
+            url = "http://localhost:59125/api/tts?text=%s&voice=%s" % (urllib.parse.quote(message.text), urllib.parse.quote(self.__voice))
+            response = requests.get(url)
+            with open("./audio-gen/ai-%i.wav" % message.id, mode="bx") as f:
+                f.write(response.content)
+        else:
+            subprocess.run(
+                ["mimic3", "--voice", self.__voice, "ai-%i|%s" % (message.id, message.text), "--output-dir", "./audio-gen", "--csv"], 
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
 
         if self.__debug: 
             print_center("Got mimic3 TTS audio in %.1fs" % (time.time() - lastTime))
@@ -124,7 +135,8 @@ class TextToSpeech:
         print("")
 
     def cleanup(self):
-        self.__server_process.kill()
+        if self.__with_server:
+            self.__server_process.kill()
         files = os.listdir("./audio-gen")
         for f in files:
             subprocess.run(["rm", "./audio-gen/" + f])

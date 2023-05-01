@@ -1,6 +1,6 @@
 import sys
 from colorama import Back, Style
-from gpt_chatbot.console_utils import clear_last_line
+from bumblebee_chatbot.console_utils import clear_last_line
 
 class MessagePrinter:
     __max_width: int

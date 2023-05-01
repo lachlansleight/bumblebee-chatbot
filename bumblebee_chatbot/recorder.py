@@ -8,7 +8,7 @@ from pvporcupine import Porcupine, create
 from pvrecorder import PvRecorder
 from webrtcvad import Vad
 
-from gpt_chatbot.console_utils import print_center
+from bumblebee_chatbot.console_utils import print_center
 
 class AudioRecorder:
 

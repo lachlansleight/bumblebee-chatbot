@@ -8,8 +8,8 @@ from tiktoken import get_encoding, Encoding
 from typing import cast
 from colorama import Back, Style
 
-from gpt_chatbot.console_utils import clear_last_line, print_thinking, chat_width
-from gpt_chatbot.message_printer import MessagePrinter
+from bumblebee_chatbot.console_utils import clear_last_line, print_thinking, chat_width
+from bumblebee_chatbot.message_printer import MessagePrinter
 
 class OpenAi:
     prompt_tokens = 0

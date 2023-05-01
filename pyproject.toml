@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "gpt_chatbot"
+name = "bumblebee_chatbot"
 version = "0.2.0"
 description = ""
 authors = ["Lachlan Sleight"]
 readme = "README.md"
-packages = [{include = "gpt_chatbot"}]
+packages = [{include = "bumblebee_chatbot"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -24,5 +24,5 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-dev = "gpt_chatbot.wakeword:main"
-test = "gpt_chatbot.whispertest:main"
+dev = "bumblebee_chatbot.wakeword:main"
+test = "bumblebee_chatbot.whispertest:main"

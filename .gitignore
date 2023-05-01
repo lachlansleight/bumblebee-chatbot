@@ -2,5 +2,5 @@
 audio-gen
 conversations
 dist
-gpt_chatbot/__pycache__
+bumblebee_chatbot/__pycache__
 .env

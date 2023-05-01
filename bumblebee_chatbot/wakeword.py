@@ -4,11 +4,11 @@ import asyncio
 from typing import cast
 import whisper
 
-from gpt_chatbot.console_utils import print_right, print_center, print_recording, print_transcribing, clear_last_line
-from gpt_chatbot.tts import TextToSpeech
-from gpt_chatbot.openai import OpenAi
-from gpt_chatbot.recorder import AudioRecorder
-from gpt_chatbot.soundplayer import SoundPlayer
+from bumblebee_chatbot.console_utils import print_right, print_center, print_recording, print_transcribing, clear_last_line
+from bumblebee_chatbot.tts import TextToSpeech
+from bumblebee_chatbot.openai import OpenAi
+from bumblebee_chatbot.recorder import AudioRecorder
+from bumblebee_chatbot.soundplayer import SoundPlayer
 
 async def main_loop():
     # Config vars - should make these command line arguments at some point
@@ -28,6 +28,9 @@ async def main_loop():
     # The voice type to use for text-to-speech
     # https://mycroftai.github.io/mimic3-voices/
     tts_voice = "en_US/hifi-tts_low#92"
+    # Whether to use a local webserver to generate TTS audio files
+    # (the server is much faster
+    use_tts_server = True
     # The Whisper model to use - larger models are more accurate, but much slower
     whisper_model = "tiny.en"
     # Either cuda or cpu
@@ -37,7 +40,7 @@ async def main_loop():
     #============================================#
 
     openai = OpenAi(system_prompt)
-    tts = TextToSpeech(tts_voice, show_debug)
+    tts = TextToSpeech(tts_voice, use_tts_server, show_debug)
     soundplayer = SoundPlayer()
 
     # Show fancy header
