@@ -24,21 +24,26 @@ class AudioRecorder:
     __debug: bool
 
 
-    def __init__(self, device_id = 0, vad_sensitivity = 2, dead_time_threshold = 0.5, debug = False):
+    def __init__(self, device_id = 0, wakeword = 'bumblebee', wakeword_sensitivity = 0.5, vad_sensitivity = 2, dead_time_threshold = 0.5, debug = False):
+        # Exclude the weird 'Monitor of x' device that linux seems to be so fond of reordering to be index 0...
+        devices = PvRecorder.get_audio_devices()
+        filtered_devices = list(filter(lambda d: "Monitor of" not in d, devices))
+        device_name = filtered_devices[device_id]
+        final_device_id = devices.index(device_name)
         #print_center("Audio Input Devices:")
-        #for i, device in enumerate(PvRecorder.get_audio_devices()):
+        #for i, device in enumerate(devices):
         #    print_center("[%d]: %s" % (i, device))
         #print("")
 
         # Initialize porcupine wakeword detector
-        self.__porcupine = create(access_key=os.environ.get("picovoice_key"), keywords=['bumblebee'])
+        self.__porcupine = create(access_key=os.environ.get("picovoice_key"), keywords=[wakeword], sensitivities=[wakeword_sensitivity])
 
         self.__sample_rate = self.__porcupine.sample_rate
         self.__frame_length = self.__porcupine.frame_length
 
         # Initialize audio recorder
-        self.__recorder = PvRecorder(device_index=device_id, frame_length=self.__frame_length)
-        self.__device_name = PvRecorder.get_audio_devices()[device_id]
+        self.__recorder = PvRecorder(device_index=final_device_id, frame_length=self.__frame_length)
+        self.__device_name = devices[final_device_id]
 
         # Initialize Voice Activation Detector
         self.__vad = Vad()

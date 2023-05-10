@@ -4,6 +4,7 @@ import asyncio
 from typing import cast
 import whisper
 
+from bumblebee_chatbot.config import *
 from bumblebee_chatbot.console_utils import print_right, print_center, print_recording, print_transcribing, clear_last_line
 from bumblebee_chatbot.tts import TextToSpeech
 from bumblebee_chatbot.openai import OpenAi
@@ -11,34 +12,6 @@ from bumblebee_chatbot.recorder import AudioRecorder
 from bumblebee_chatbot.soundplayer import SoundPlayer
 
 async def main_loop():
-    # Config vars - should make these command line arguments at some point
-    #============================================#
-    # The duration of no detected speech to use before transcribing + sending to GPT-4
-    dead_time_threshold = 1
-    # If no messages are received from the user in this time, the conversation will be wiped
-    # This is to save on prompt token spending
-    conversation_break_threshold = 120
-    # Whether to show debug messages, mostly regarding how long things take
-    show_debug = False
-    # The audio device ID to use for user speech
-    device_id = 0
-    # The sensitivity of voice-activation, 0 - 3
-    # Higher means it's more aggressive at considering something 'silence'
-    vad_sensitivity = 2
-    # The voice type to use for text-to-speech
-    # https://mycroftai.github.io/mimic3-voices/
-    tts_voice = "en_US/hifi-tts_low#92"
-    # Whether to use a local webserver to generate TTS audio files
-    # (the server is much faster
-    use_tts_server = True
-    # The Whisper model to use - larger models are more accurate, but much slower
-    whisper_model = "tiny.en"
-    # Either cuda or cpu
-    whisper_device = "cuda"
-    # The system prompt that defines the broad behaviour of the system
-    system_prompt = "You are a casual and helpful assistant. Unless more information is requested, you keep your replies as brief as possible. Unless explicitly asked, you do not respond with lists of information."
-    #============================================#
-
     openai = OpenAi(system_prompt)
     tts = TextToSpeech(tts_voice, use_tts_server, show_debug)
     soundplayer = SoundPlayer()
@@ -53,7 +26,7 @@ async def main_loop():
     
     # Initialize all the audio recording stuff
     print_center("Initializing Audio")
-    recorder = AudioRecorder(device_id, vad_sensitivity, dead_time_threshold, show_debug)
+    recorder = AudioRecorder(device_id, wakeword, wakeword_sensitivity, vad_sensitivity, dead_time_threshold, show_debug)
     clear_last_line()
     print_center("Initialized Audio with device:")
     print_center(recorder.get_device_name())
@@ -70,9 +43,9 @@ async def main_loop():
     #Play welcome message
     print("")
     print_center("Initialization Complete.")
-    print_center("Say 'Bumblebee' to trigger recording")
+    print_center("Say '%s' to trigger recording" % wakeword)
     #tts.say("Initialization Complete!")
-    #tts.say("Say 'Bumblebee' to trigger recording.")
+    #tts.say("Say '%s' to trigger recording." % wakeword)
     soundplayer.play_beep_low()
     soundplayer.play_beep_high()
     print("=" * total_width + "\n")
